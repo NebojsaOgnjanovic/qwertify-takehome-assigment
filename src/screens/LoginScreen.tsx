@@ -1,23 +1,25 @@
-import React, { useState } from "react";
 import {
-  View,
-  TextInput,
   Button,
-  Text,
-  StyleSheet,
-  Alert,
-  Image,
   Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import QWInput from "../componenets/QWInput";
+import QWInput from "../components/QWInput"; // Adjust the import path as necessary
+import useLoginForm from "../hooks/useLoginForm";
 
 const { width, height } = Dimensions.get("window");
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleLogin = () => {};
+  const {
+    email,
+    handleEmailChange,
+    password,
+    handlePasswordChange,
+    errors,
+    handleLogin,
+  } = useLoginForm();
 
   return (
     <View style={styles.container}>
@@ -27,12 +29,19 @@ const LoginScreen = () => {
         resizeMode="contain"
       />
       <Text style={styles.title}>Login</Text>
-      <QWInput placeholder="Email" value={email} onChangeText={setEmail} />
+
+      <QWInput
+        placeholder="Email"
+        value={email}
+        onChangeText={handleEmailChange}
+        error={errors.email}
+      />
       <QWInput
         placeholder="Password"
         value={password}
-        onChangeText={setPassword}
+        onChangeText={handlePasswordChange}
         secureTextEntry
+        error={errors.password}
       />
 
       <Button title="Login" onPress={handleLogin} />
