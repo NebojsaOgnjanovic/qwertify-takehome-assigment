@@ -1,12 +1,13 @@
-import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { useAppDispatch } from "../store";
 import { logout } from "../store/slices/authSlice";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useGetUsersQuery } from "../services/users";
 
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
+  const { data: users } = useGetUsersQuery({ page: 1 });
+
+  console.log(users);
 
   const handleLogout = () => {
     dispatch(logout());

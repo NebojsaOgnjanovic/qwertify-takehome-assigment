@@ -5,6 +5,7 @@ export const api = createApi({
     baseUrl: "https://reqres.in/api",
   }),
   endpoints: () => ({}),
+  tagTypes: ["users"],
 });
 
 export default api;
