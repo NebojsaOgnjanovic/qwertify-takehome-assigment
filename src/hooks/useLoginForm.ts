@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Alert } from "react-native";
 import { z } from "zod";
+import { useLoginMutation } from "../services/auth";
+import { useAppDispatch } from "../store";
+import { login } from "../store/slices/authSlice";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -8,15 +11,22 @@ const loginSchema = z.object({
 });
 
 const useLoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [loginUser, { isLoading }] = useLoginMutation();
+  const dispatch = useAppDispatch();
 
+  const [credentials, setCredentials] = useState({
+    email: "",
+    password: "",
+  });
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {}
   );
 
   const validateFields = () => {
-    const result = loginSchema.safeParse({ email, password });
+    const result = loginSchema.safeParse({
+      email: credentials.email,
+      password: credentials.password,
+    });
 
     if (!result.success) {
       const fieldErrors = result.error.format();
@@ -31,32 +41,39 @@ const useLoginForm = () => {
     return true;
   };
 
-  const handleEmailChange = (text: string) => {
-    setEmail(text);
-    setErrors((prev) => ({ ...prev, email: undefined }));
+  const handleCredentialChanged = (text: string, name: string) => {
+    setCredentials((prev) => ({ ...prev, [name]: text }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  const handlePasswordChange = (text: string) => {
-    setPassword(text);
-    setErrors((prev) => ({ ...prev, password: undefined }));
-  };
+  const handleLogin = async () => {
+    if (isLoading) return;
 
-  const handleLogin = () => {
     const isValid = validateFields();
 
-    if (!isValid) {
+    if (!isValid) return;
+
+    const response = await loginUser({
+      email: credentials.email,
+      password: credentials.password,
+    });
+
+    if (response.error || !response.data) {
+      Alert.alert(
+        "Invalid credentials",
+        "Please check your email and password"
+      );
       return;
     }
 
-    Alert.alert("Login Successful", "You have logged in successfully");
+    dispatch(login({ token: response.data.token }));
   };
 
   return {
-    email,
-    handleEmailChange,
-    password,
-    handlePasswordChange,
+    credentials,
     errors,
+    isLoading,
+    handleCredentialChanged,
     handleLogin,
   };
 };

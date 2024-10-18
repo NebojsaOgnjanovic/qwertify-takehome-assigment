@@ -1,7 +1,7 @@
 import { BaseQueryFn, EndpointBuilder } from "@reduxjs/toolkit/dist/query";
 
 export type LoginRequest = {
-  username: string;
+  email: string;
   password: string;
 };
 

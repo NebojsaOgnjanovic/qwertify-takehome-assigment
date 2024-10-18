@@ -1,9 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { useState } from "react";
+import { useAppSelector } from "../store";
 import AppNavigator from "./AppNavigator";
 import AuthNavigator from "./AuthNavigator";
-import { useSelector } from "react-redux";
-import { useAppSelector } from "../store";
 
 const RootNavigator = () => {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);

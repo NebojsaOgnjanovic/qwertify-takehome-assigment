@@ -13,11 +13,10 @@ const { width, height } = Dimensions.get("window");
 
 const LoginScreen = () => {
   const {
-    email,
-    handleEmailChange,
-    password,
-    handlePasswordChange,
+    credentials,
+    handleCredentialChanged,
     errors,
+    isLoading,
     handleLogin,
   } = useLoginForm();
 
@@ -32,19 +31,22 @@ const LoginScreen = () => {
 
       <QWInput
         placeholder="Email"
-        value={email}
-        onChangeText={handleEmailChange}
+        value={credentials.email}
+        onChangeText={(text) => handleCredentialChanged(text, "email")}
         error={errors.email}
       />
       <QWInput
         placeholder="Password"
-        value={password}
-        onChangeText={handlePasswordChange}
+        value={credentials.password}
+        onChangeText={(text) => handleCredentialChanged(text, "password")}
         secureTextEntry
         error={errors.password}
       />
 
-      <Button title="Login" onPress={handleLogin} />
+      <Button
+        title={isLoading ? "Loading..." : "Login"}
+        onPress={handleLogin}
+      />
     </View>
   );
 };
@@ -57,6 +59,7 @@ const styles = StyleSheet.create({
   logo: {
     width: width * 0.8,
     height: height * 0.3,
+    alignSelf: "center",
   },
   title: {
     fontSize: 24,
