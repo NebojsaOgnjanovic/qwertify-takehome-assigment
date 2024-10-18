@@ -1,65 +1,75 @@
-import {
-  NavigationProp,
-  RouteProp,
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
-import { useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { StyleSheet, Text, View } from "react-native";
+import { z } from "zod";
 import VariantButton from "../components/ActionButton";
 import QWInput from "../components/QWInput";
+import useForm from "../hooks/useLogin";
 import { User } from "../types/user";
-import { RootAppStackParamList } from "../navigation/AppNavigator";
 
 type RootStackParamList = {
   AddEditUser?: User;
 };
 
+const userSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  avatar: z.string().url("Invalid avatar URL"),
+});
+
 const AddEditUserScreen = () => {
   const route = useRoute<RouteProp<RootStackParamList, "AddEditUser">>();
   const isEditMode = !!route.params?.id;
 
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [avatar, setAvatar] = useState("");
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const { formData, errors, isLoading, handleFieldChanged, handleSubmit } =
+    useForm(
+      {
+        email: route.params?.email || "",
+        firstName: route.params?.firstName || "",
+        lastName: route.params?.lastName || "",
+        avatar: route.params?.avatar || "",
+      },
+      userSchema,
+      async (data) => {
+        console.log("User data", data);
+      }
+    );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
         {isEditMode ? "Edit User" : "Add New User"}
       </Text>
-
-      {/* Form Fields */}
       <QWInput
         placeholder="Email"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
+        value={formData.email}
+        onChangeText={(text) => handleFieldChanged("email", text)}
         error={errors.email}
       />
       <QWInput
         placeholder="First Name"
-        value={firstName}
-        onChangeText={(text) => setFirstName(text)}
+        value={formData.firstName}
+        onChangeText={(text) => handleFieldChanged("firstName", text)}
         error={errors.firstName}
       />
       <QWInput
         placeholder="Last Name"
-        value={lastName}
-        onChangeText={(text) => setLastName(text)}
+        value={formData.lastName}
+        onChangeText={(text) => handleFieldChanged("lastName", text)}
         error={errors.lastName}
       />
       <QWInput
         placeholder="Avatar URL"
-        value={avatar}
-        onChangeText={(text) => setAvatar(text)}
+        value={formData.avatar}
+        onChangeText={(text) => handleFieldChanged("avatar", text)}
         error={errors.avatar}
       />
       <VariantButton
         variant="primary"
+        isLoading={isLoading}
         label={isEditMode ? "Update User" : "Create User"}
         style={styles.button}
+        onPress={handleSubmit}
       />
     </View>
   );

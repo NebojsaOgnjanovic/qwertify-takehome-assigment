@@ -6,19 +6,36 @@ import {
   Text,
   View,
 } from "react-native";
+import { z } from "zod";
 import QWInput from "../components/QWInput"; // Adjust the import path as necessary
-import useLoginForm from "../hooks/useLoginForm";
+import { useLoginMutation } from "../services/auth";
+import { useAppDispatch } from "../store";
+import useForm from "../hooks/useLogin";
+import { login } from "../store/slices/authSlice";
 
 const { width, height } = Dimensions.get("window");
 
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+});
+
 const LoginScreen = () => {
-  const {
-    credentials,
-    handleCredentialChanged,
-    errors,
-    isLoading,
-    handleLogin,
-  } = useLoginForm();
+  const [loginUser] = useLoginMutation();
+  const dispatch = useAppDispatch();
+
+  const { formData, errors, isLoading, handleFieldChanged, handleSubmit } =
+    useForm(
+      { email: "eve.holt@reqres.in", password: "cityslicka" }, // Initial form state
+      loginSchema,
+      async (data) => {
+        const response = await loginUser(data);
+        if (response.error || !response.data) {
+          throw new Error("Invalid credentials");
+        }
+        dispatch(login({ token: response.data.token }));
+      }
+    );
 
   return (
     <View style={styles.container}>
@@ -31,21 +48,21 @@ const LoginScreen = () => {
 
       <QWInput
         placeholder="Email"
-        value={credentials.email}
-        onChangeText={(text) => handleCredentialChanged(text, "email")}
+        value={formData.email}
+        onChangeText={(text) => handleFieldChanged("email", text)}
         error={errors.email}
       />
       <QWInput
         placeholder="Password"
-        value={credentials.password}
-        onChangeText={(text) => handleCredentialChanged(text, "password")}
+        value={formData.password}
+        onChangeText={(text) => handleFieldChanged("password", text)}
         secureTextEntry
         error={errors.password}
       />
 
       <Button
         title={isLoading ? "Loading..." : "Login"}
-        onPress={handleLogin}
+        onPress={handleSubmit}
       />
     </View>
   );

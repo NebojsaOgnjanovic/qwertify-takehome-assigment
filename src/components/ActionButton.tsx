@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacityProps,
+  ActivityIndicator,
 } from "react-native";
 
 type ButtonVariant = "primary" | "secondary";
@@ -11,12 +12,14 @@ type ButtonVariant = "primary" | "secondary";
 export type VariantButtonProps = TouchableOpacityProps & {
   variant: ButtonVariant;
   label: string;
+  isLoading?: boolean;
 };
 
 const VariantButton = ({
   variant,
   label,
   style,
+  isLoading,
   ...props
 }: VariantButtonProps) => {
   return (
@@ -28,7 +31,11 @@ const VariantButton = ({
       ]}
       {...props}
     >
-      <Text style={styles.text}>{label}</Text>
+      {isLoading ? (
+        <ActivityIndicator />
+      ) : (
+        <Text style={styles.text}>{label}</Text>
+      )}
     </TouchableOpacity>
   );
 };

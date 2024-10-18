@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -6,14 +7,12 @@ import {
   Text,
   View,
 } from "react-native";
-import { useAppDispatch } from "../store";
-import { logout } from "../store/slices/authSlice";
-import { useGetUsersQuery } from "../services/users";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import UserCard from "../components/UserCard";
-import { User } from "../types/user";
 import VariantButton from "../components/ActionButton";
+import UserCard from "../components/UserCard";
 import { RootAppStackParamList } from "../navigation/AppNavigator";
+import { useGetUsersQuery } from "../services/users";
+import { useAppDispatch } from "../store";
+import { User } from "../types/user";
 
 const flatListOptions = {
   initialNumToRender: 6,
@@ -30,10 +29,6 @@ const HomeScreen = () => {
   const [page, setPage] = useState(1);
 
   const { data: usersData, isLoading, isFetching } = useGetUsersQuery({ page });
-
-  const handleLogout = () => {
-    dispatch(logout());
-  };
 
   const handleEditUser = (user: User) => {
     navigation.navigate("AddEditUser", user);
