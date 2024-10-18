@@ -34,7 +34,7 @@ const HomeScreen = () => {
   };
 
   const renderItem = ({ index, item }: FlatListItemRenderType) => {
-    return <UserCard {...item} onPress={() => {}} />;
+    return <UserCard {...item} />;
   };
 
   const handleOneEndReached = () => {

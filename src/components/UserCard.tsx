@@ -1,10 +1,11 @@
 import React from "react";
-
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Image } from "react-native";
 import { User } from "../types/user";
+import ActionButton from "./ActionButton"; // Import the new ActionButton component
 
 export type UserCardProps = User & {
-  onPress: () => void;
+  onPressEdit?: () => void;
+  onPressDelete?: () => void;
 };
 
 const UserCard = ({
@@ -12,23 +13,62 @@ const UserCard = ({
   email,
   firstName,
   lastName,
-  onPress,
+  onPressEdit,
+  onPressDelete,
 }: UserCardProps) => {
   return (
-    <View style={styles.container}>
-      <Text>{email}</Text>
-      <Text>{firstName}</Text>
-      <Text>{lastName}</Text>
+    <View style={styles.card}>
+      <Image source={{ uri: avatar }} style={styles.avatar} />
+      <View style={{ gap: 16 }}>
+        <View style={styles.infoContainer}>
+          <Text style={styles.name}>
+            {firstName} {lastName}
+          </Text>
+          <Text style={styles.email}>{email}</Text>
+        </View>
+        <View style={styles.actionsContainer}>
+          <ActionButton variant="primary" label="Edit" onPress={onPressEdit} />
+          <ActionButton
+            variant="secondary"
+            label="Delete"
+            onPress={onPressDelete}
+          />
+        </View>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
+  card: {
+    flexDirection: "row",
+    padding: 16,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
     alignItems: "center",
-    height: 230,
-    borderWidth: 2,
+    marginBottom: 16,
+    gap: 16,
+  },
+  avatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 30,
+    marginRight: 16,
+  },
+  infoContainer: {},
+  name: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  email: {
+    fontSize: 14,
+    color: "#555",
+  },
+  actionsContainer: {
+    flexDirection: "row",
+    gap: 8,
   },
 });
 
