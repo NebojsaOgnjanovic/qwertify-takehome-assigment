@@ -1,6 +1,6 @@
+import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Button,
   FlatList,
   StyleSheet,
   Text,
@@ -9,10 +9,11 @@ import {
 import { useAppDispatch } from "../store";
 import { logout } from "../store/slices/authSlice";
 import { useGetUsersQuery } from "../services/users";
-
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import UserCard from "../components/UserCard";
-import { useState } from "react";
 import { User } from "../types/user";
+import VariantButton from "../components/ActionButton";
+import { RootAppStackParamList } from "../navigation/AppNavigator";
 
 const flatListOptions = {
   initialNumToRender: 6,
@@ -25,6 +26,7 @@ type FlatListItemRenderType = {
 
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
+  const navigation = useNavigation<NavigationProp<RootAppStackParamList>>();
   const [page, setPage] = useState(1);
 
   const { data: usersData, isLoading, isFetching } = useGetUsersQuery({ page });
@@ -33,8 +35,22 @@ const HomeScreen = () => {
     dispatch(logout());
   };
 
+  const handleEditUser = (user: User) => {
+    navigation.navigate("AddEditUser", user);
+  };
+
+  const handleAddUser = () => {
+    navigation.navigate("AddEditUser");
+  };
+
   const renderItem = ({ index, item }: FlatListItemRenderType) => {
-    return <UserCard {...item} />;
+    return (
+      <UserCard
+        {...item}
+        onPressEdit={() => handleEditUser(item)}
+        onPressDelete={() => console.log("Delete user", item.id)}
+      />
+    );
   };
 
   const handleOneEndReached = () => {
@@ -46,24 +62,35 @@ const HomeScreen = () => {
   return isLoading ? (
     <ActivityIndicator />
   ) : (
-    <FlatList
-      ListEmptyComponent={<Text>No users available</Text>}
-      {...flatListOptions}
-      contentContainerStyle={styles.container}
-      data={usersData?.data}
-      onEndReached={handleOneEndReached}
-      refreshing={isLoading}
-      renderItem={renderItem}
-      testID="users-list"
-    />
+    <View style={styles.screenContainer}>
+      <FlatList
+        ListEmptyComponent={<Text>No users available</Text>}
+        {...flatListOptions}
+        contentContainerStyle={styles.container}
+        data={usersData?.data}
+        onEndReached={handleOneEndReached}
+        refreshing={isLoading}
+        renderItem={renderItem}
+        testID="users-list"
+      />
+      <VariantButton
+        variant="primary"
+        label="Add New User"
+        onPress={handleAddUser}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  screenContainer: {
+    flex: 1,
+    padding: 20,
+  },
   container: {
     width: "100%",
     gap: 20,
-    padding: 20,
+    paddingBottom: 20,
   },
 });
 

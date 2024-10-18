@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 import { User } from "../types/user";
-import ActionButton from "./ActionButton"; // Import the new ActionButton component
+import ActionButton from "./ActionButton";
 
 export type UserCardProps = User & {
   onPressEdit?: () => void;
