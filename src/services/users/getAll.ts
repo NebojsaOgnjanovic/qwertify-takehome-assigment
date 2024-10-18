@@ -25,8 +25,9 @@ export default (build: EndpointBuilder<BaseQueryFn, string, string>) =>
       method: "GET",
     }),
     merge: (currentCache, newItems) => {
-      console.log("dogodim se");
-      currentCache.data.push(...newItems.data);
+      if (newItems.page === 1) {
+        return newItems;
+      } else currentCache.data.push(...newItems.data);
     },
     serializeQueryArgs: ({ endpointName }) => {
       return endpointName;
