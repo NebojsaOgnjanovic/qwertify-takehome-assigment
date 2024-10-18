@@ -15,8 +15,8 @@ const useLoginForm = () => {
   const dispatch = useAppDispatch();
 
   const [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
+    email: "eve.holt@reqres.in",
+    password: "cityslicka",
   });
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {}

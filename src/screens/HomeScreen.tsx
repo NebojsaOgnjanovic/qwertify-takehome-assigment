@@ -1,30 +1,69 @@
-import { Button, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useAppDispatch } from "../store";
 import { logout } from "../store/slices/authSlice";
 import { useGetUsersQuery } from "../services/users";
 
+import UserCard from "../components/UserCard";
+import { useState } from "react";
+import { User } from "../types/user";
+
+const flatListOptions = {
+  initialNumToRender: 6,
+};
+
+type FlatListItemRenderType = {
+  index: number;
+  item: User;
+};
+
 const HomeScreen = () => {
   const dispatch = useAppDispatch();
-  const { data: users } = useGetUsersQuery({ page: 1 });
+  const [page, setPage] = useState(1);
 
-  console.log(users);
+  const { data: usersData, isLoading, isFetching } = useGetUsersQuery({ page });
 
   const handleLogout = () => {
     dispatch(logout());
   };
-  return (
-    <View style={styles.container}>
-      <Text>Welcome to the Home Screen!</Text>
-      <Button title="Logout" onPress={handleLogout} />
-    </View>
+
+  const renderItem = ({ index, item }: FlatListItemRenderType) => {
+    return <UserCard {...item} onPress={() => {}} />;
+  };
+
+  const handleOneEndReached = () => {
+    if (isFetching || isLoading || usersData?.data.length === usersData?.total)
+      return;
+    setPage((prev) => prev + 1);
+  };
+
+  return isLoading ? (
+    <ActivityIndicator />
+  ) : (
+    <FlatList
+      ListEmptyComponent={<Text>No users available</Text>}
+      {...flatListOptions}
+      contentContainerStyle={styles.container}
+      data={usersData?.data}
+      onEndReached={handleOneEndReached}
+      refreshing={isLoading}
+      renderItem={renderItem}
+      testID="users-list"
+    />
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    width: "100%",
+    gap: 20,
+    padding: 20,
   },
 });
 
