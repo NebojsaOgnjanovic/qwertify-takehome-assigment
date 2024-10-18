@@ -2,6 +2,7 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   StyleSheet,
   Text,
@@ -10,7 +11,7 @@ import {
 import VariantButton from "../components/ActionButton";
 import UserCard from "../components/UserCard";
 import { RootAppStackParamList } from "../navigation/AppNavigator";
-import { useGetUsersQuery } from "../services/users";
+import { useDeleteUserMutation, useGetUsersQuery } from "../services/users";
 import { useAppDispatch } from "../store";
 import { User } from "../types/user";
 
@@ -29,6 +30,7 @@ const HomeScreen = () => {
   const [page, setPage] = useState(1);
 
   const { data: usersData, isLoading, isFetching } = useGetUsersQuery({ page });
+  const [deleteUser] = useDeleteUserMutation();
 
   const handleEditUser = (user: User) => {
     navigation.navigate("AddEditUser", user);
@@ -38,12 +40,21 @@ const HomeScreen = () => {
     navigation.navigate("AddEditUser");
   };
 
+  const handleDeleteUser = async (id: number) => {
+    try {
+      await deleteUser({ id });
+      Alert.alert("Success", "User deleted successfully");
+    } catch (error) {
+      Alert.alert("Error", "Failed to delete user");
+    }
+  };
+
   const renderItem = ({ index, item }: FlatListItemRenderType) => {
     return (
       <UserCard
         {...item}
         onPressEdit={() => handleEditUser(item)}
-        onPressDelete={() => console.log("Delete user", item.id)}
+        onPressDelete={() => handleDeleteUser(item.id)}
       />
     );
   };
