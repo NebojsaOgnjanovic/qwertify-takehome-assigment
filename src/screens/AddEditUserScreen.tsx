@@ -1,10 +1,22 @@
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  NavigationProp,
+  RouteProp,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
+
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { z } from "zod";
 import VariantButton from "../components/ActionButton";
 import QWInput from "../components/QWInput";
-import useForm from "../hooks/useLogin";
+import useForm from "../hooks/useForm";
+import { RootAppStackParamList } from "../navigation/AppNavigator";
+import {
+  useCreateUserMutation,
+  useUpdateUserMutation,
+} from "../services/users";
 import { User } from "../types/user";
+import { mapClientUserToDto } from "../utils/user-object-mapper";
 
 type RootStackParamList = {
   AddEditUser?: User;
@@ -19,7 +31,11 @@ const userSchema = z.object({
 
 const AddEditUserScreen = () => {
   const route = useRoute<RouteProp<RootStackParamList, "AddEditUser">>();
+  const navigation = useNavigation<NavigationProp<RootAppStackParamList>>();
   const isEditMode = !!route.params?.id;
+
+  const [createUser] = useCreateUserMutation();
+  const [updatedUser] = useUpdateUserMutation();
 
   const { formData, errors, isLoading, handleFieldChanged, handleSubmit } =
     useForm(
@@ -31,7 +47,25 @@ const AddEditUserScreen = () => {
       },
       userSchema,
       async (data) => {
-        console.log("User data", data);
+        try {
+          if (isEditMode)
+            await updatedUser({
+              id: route.params?.id,
+              ...mapClientUserToDto(data),
+            });
+          else await createUser({ ...mapClientUserToDto(data) });
+
+          navigation.navigate("Home");
+          Alert.alert(
+            "Success",
+            `User ${isEditMode ? "updated" : "created"} successfully`
+          );
+        } catch (error) {
+          Alert.alert(
+            "Error",
+            `Failed to ${isEditMode ? "update" : "create"} user`
+          );
+        }
       }
     );
 

@@ -20,12 +20,16 @@ export const mapUsersResponseToClient = (
   };
 };
 
-export const mapClientUserToDto = (user: User) => {
+export const mapClientUserToDto = (userData: {
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+}) => {
   return {
-    id: user.id,
-    email: user.email,
-    first_name: user.firstName,
-    last_name: user.lastName,
-    avatar: user.avatar,
+    email: userData.email,
+    first_name: userData.firstName,
+    last_name: userData.lastName,
+    avatar: userData.avatar,
   };
 };

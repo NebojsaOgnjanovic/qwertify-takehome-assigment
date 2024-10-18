@@ -10,7 +10,7 @@ import { z } from "zod";
 import QWInput from "../components/QWInput"; // Adjust the import path as necessary
 import { useLoginMutation } from "../services/auth";
 import { useAppDispatch } from "../store";
-import useForm from "../hooks/useLogin";
+import useForm from "../hooks/useForm";
 import { login } from "../store/slices/authSlice";
 
 const { width, height } = Dimensions.get("window");
