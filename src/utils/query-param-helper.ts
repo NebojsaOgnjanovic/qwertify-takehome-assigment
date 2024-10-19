@@ -1,52 +1,25 @@
 export const camelCaseToKebabCase = (key: string): string => {
-  return `${key
-    .split(/(?=[A-Z])/)
-    .join("-")
-    .toLowerCase()}`;
+  return key.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 };
 
 export const makeQueryParams = (
-  queryObject: Record<string, string | number | string[] | undefined | boolean>,
+  queryObject: Record<
+    string,
+    string | number | string[] | undefined | boolean | null
+  >,
   baseUrl: string
 ): string => {
-  const queryParams: string[] = [];
+  const queryParams = Object.entries(queryObject)
+    .filter(([, value]) => value !== undefined && value !== null) // Filter out undefined or null values
+    .map(([key, value]) => {
+      const formattedKey = camelCaseToKebabCase(key);
 
-  Object.keys(queryObject).forEach((key) => {
-    if (Object.prototype.hasOwnProperty.call(queryObject, key)) {
-      switch (typeof queryObject[key]) {
-        case "string":
-          queryParams.push(
-            `${camelCaseToKebabCase(key)}=${queryObject[key] as string}`
-          );
-          break;
-        case "number":
-          queryParams.push(
-            `${camelCaseToKebabCase(key)}=${
-              queryObject[key] as unknown as string
-            }`
-          );
-          break;
-        case "boolean":
-          queryParams.push(
-            `${camelCaseToKebabCase(key)}=${
-              queryObject[key] as unknown as string
-            }`
-          );
-          break;
-        case "object":
-          if (Array.isArray(queryObject[key])) {
-            queryParams.push(
-              `${camelCaseToKebabCase(key)}=${(
-                queryObject[key] as string[]
-              ).join(",")}`
-            );
-          }
-          break;
-        default:
-          break;
+      if (Array.isArray(value)) {
+        return `${formattedKey}=${value.join(",")}`;
       }
-    }
-  });
+
+      return `${formattedKey}=${String(value)}`;
+    });
 
   const queryString = queryParams.join("&");
   const separator = queryString ? (baseUrl.includes("?") ? "&" : "?") : "";
