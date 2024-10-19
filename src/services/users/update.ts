@@ -1,22 +1,24 @@
 import { BaseQueryFn, EndpointBuilder } from "@reduxjs/toolkit/dist/query";
+import api from "..";
+import { mapUserDtoToClinet } from "../../utils/user-object-mapper";
+import { UserResponseDto } from "./getAll";
+import { PaginatedResponse } from "../../types/paginated-response";
+import { User } from "../../types/user";
 
-// Define the request type for updating a user
 export type UpdateUserRequest = {
-  id: number; // The user ID that you are updating
+  id: number;
   first_name: string;
   last_name: string;
   email: string;
   avatar: string;
 };
 
-// Define the response type for updating a user
 export type UpdateUserResponse = {
   name: string;
   job: string;
-  updatedAt: string; // The time the user was updated
+  updatedAt: string;
 };
 
-// Define the mutation for updating a user
 export default (build: EndpointBuilder<BaseQueryFn, string, string>) =>
   build.mutation<UpdateUserResponse, UpdateUserRequest>({
     query: ({ id, ...user }) => ({
@@ -24,5 +26,32 @@ export default (build: EndpointBuilder<BaseQueryFn, string, string>) =>
       method: "PATCH",
       body: user,
     }),
-    invalidatesTags: ["users"],
+    async onQueryStarted(updatedUser, { dispatch, queryFulfilled }) {
+      const patchResult = dispatch(
+        api.util.updateQueryData(
+          // @ts-expect-error
+          "getUsers",
+          undefined,
+          (draft: PaginatedResponse<User>) => {
+            const userIndex = draft.data.findIndex(
+              (user: User) => user.id === updatedUser.id
+            );
+
+            const updatedUserClinet = mapUserDtoToClinet(updatedUser);
+
+            if (userIndex >= 0) {
+              draft.data[userIndex] = {
+                ...draft.data[userIndex],
+                ...updatedUserClinet,
+              };
+            }
+          }
+        )
+      );
+      try {
+        await queryFulfilled;
+      } catch {
+        patchResult.undo();
+      }
+    },
   });

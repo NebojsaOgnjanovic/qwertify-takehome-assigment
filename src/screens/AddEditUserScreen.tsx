@@ -40,10 +40,12 @@ const AddEditUserScreen = () => {
   const { formData, errors, isLoading, handleFieldChanged, handleSubmit } =
     useForm(
       {
-        email: route.params?.email || "",
-        firstName: route.params?.firstName || "",
-        lastName: route.params?.lastName || "",
-        avatar: route.params?.avatar || "",
+        email: route.params?.email || "nebojsa@gmail.com",
+        firstName: route.params?.firstName || "Nebojsa",
+        lastName: route.params?.lastName || "Ognjanovic",
+        avatar:
+          route.params?.avatar ||
+          "https://lh3.googleusercontent.com/-8_yL2D3_OKI/AAAAAAAAAAI/AAAAAAAAAAA/ALKGfkmClG-_RXHWAvmUtGT5EoQmEr7qmg/s128-c/photo.jpg",
       },
       userSchema,
       async (data) => {

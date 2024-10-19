@@ -2,7 +2,7 @@ import { BaseQueryFn, EndpointBuilder } from "@reduxjs/toolkit/dist/query";
 import { User } from "../../types/user";
 import { makeQueryParams } from "../../utils/query-param-helper";
 import { mapUsersResponseToClient } from "../../utils/user-object-mapper";
-import { PaginatedResposne } from "../../types/paginated-response";
+import { PaginatedResponse } from "../../types/paginated-response";
 
 export type UserResponseDto = {
   id: number;
@@ -12,14 +12,12 @@ export type UserResponseDto = {
   avatar: string;
 };
 
-export type GetAllUsersResponse = UserResponseDto[];
-
 export type GetAllUsersParams = {
   page: number;
 };
 
 export default (build: EndpointBuilder<BaseQueryFn, string, string>) =>
-  build.query<PaginatedResposne<User>, GetAllUsersParams>({
+  build.query<PaginatedResponse<User>, GetAllUsersParams>({
     query: (params) => ({
       url: makeQueryParams(params, "/users"),
       method: "GET",

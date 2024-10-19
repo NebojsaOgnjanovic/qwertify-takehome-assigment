@@ -17,7 +17,8 @@ const QWInput: React.FC<QWInputProps> = (props) => {
   return (
     <View>
       <TextInput
-        style={[styles.input, error ? styles.inputError : null, style]} // Add red border on error
+        style={[styles.input, error ? styles.inputError : null, style]}
+        autoCapitalize="none" // Disable auto-capitalization
         {...rest}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}

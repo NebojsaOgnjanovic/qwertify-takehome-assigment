@@ -1,4 +1,4 @@
-export type PaginatedResposneDto<T> = {
+export type PaginatedResponseDto<T> = {
   page: number;
   per_page: number;
   total: number;
@@ -6,7 +6,7 @@ export type PaginatedResposneDto<T> = {
   data: T[];
 };
 
-export type PaginatedResposne<T> = {
+export type PaginatedResponse<T> = {
   page: number;
   perPage: number;
   total: number;
