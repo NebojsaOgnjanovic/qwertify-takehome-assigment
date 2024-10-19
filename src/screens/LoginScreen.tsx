@@ -26,7 +26,8 @@ const LoginScreen = () => {
 
   const { formData, errors, isLoading, handleFieldChanged, handleSubmit } =
     useForm(
-      { email: "eve.holt@reqres.in", password: "cityslicka" }, // Initial form state
+      // Added data here to avoid having to input manually when testing
+      { email: "eve.holt@reqres.in", password: "cityslicka" },
       loginSchema,
       async (data) => {
         const response = await loginUser(data);

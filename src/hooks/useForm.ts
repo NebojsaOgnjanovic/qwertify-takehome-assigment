@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Alert } from "react-native";
-import { z, ZodSchema, ZodError } from "zod";
-import { useAppDispatch } from "../store";
+import { ZodError, ZodSchema } from "zod";
 
 const useForm = <T extends Record<string, any>>(
   initialState: T,
@@ -13,15 +12,13 @@ const useForm = <T extends Record<string, any>>(
   const [errors, setErrors] = useState<{ [key in keyof T]?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Validate fields using the passed schema
   const validateFields = (): boolean => {
     try {
-      validationSchema.parse(formData); // This will throw if validation fails
+      validationSchema.parse(formData);
       setErrors({});
       return true;
     } catch (error) {
       if (error instanceof ZodError) {
-        console.log(error.errors);
         const formattedErrors: { [key in keyof T]?: string } = {};
         error.errors.forEach((err) => {
           const field = err.path[0] as keyof T;
@@ -33,13 +30,11 @@ const useForm = <T extends Record<string, any>>(
     }
   };
 
-  // Generic handler for field changes
   const handleFieldChanged = (name: keyof T, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: undefined })); // Clear error on change
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  // Handle submit action (login, add user, edit user)
   const handleSubmit = async () => {
     if (isLoading) return;
 

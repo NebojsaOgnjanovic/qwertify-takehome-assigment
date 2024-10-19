@@ -39,6 +39,7 @@ const AddEditUserScreen = () => {
 
   const { formData, errors, isLoading, handleFieldChanged, handleSubmit } =
     useForm(
+      // Added data here to avoid having to input manually when testing
       {
         email: route.params?.email || "nebojsa@gmail.com",
         firstName: route.params?.firstName || "Nebojsa",
